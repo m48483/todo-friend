@@ -1,0 +1,10 @@
+spring:
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/todo_friends
+    username: root
+    password: 1234
+  h2:
+    console:
+      enabled: true
+  application:
+    name: friend
