@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 class FriendServiceTest {
@@ -30,7 +31,7 @@ class FriendServiceTest {
     private FriendResponse[] friendResponses;
 
     @Test
-    void getFriends() {
+    void 친구_목록_불러오기() {
         when(friendRepository.findFriendsByUser1Id(1L)).thenReturn(Flux.just(friendResponses));
 
         Flux<FriendResponse> result = friendService.getFriends(1L);
@@ -48,7 +49,7 @@ class FriendServiceTest {
     }
 
     @Test
-    void createFriend() {
+    void 친구_관계_추가_성공() {
 //        given
         FriendRequest req = new FriendRequest(1L,2L);
         friend = new Friend(req.toEntity().getUser1Id(),req.toEntity().getUser2Id());
@@ -68,10 +69,33 @@ class FriendServiceTest {
     }
 
     @Test
-    void deleteFriend() {
-        // Test for deleting friend
+    void 친구_관계_삭제_성공() {
+//        given
+        when(friendRepository.deleteByUser1IdAndUser2Id(anyLong(),anyLong()))
+                .thenReturn(Mono.empty());
+
+//        given
+        Mono<Void> result = friendService.deleteFriend(1L, 2L);
+//        then
+        StepVerifier.create(result)
+                .expectComplete()
+                .verify();
     }
 
+    @Test
+    void 친구_관계_삭제_실패_테스트() {
+        // given
+        when(friendRepository.deleteByUser1IdAndUser2Id(anyLong(), anyLong()))
+                .thenReturn(Mono.error(new IllegalArgumentException("친구 관계 삭제에 실패했습니다.")));
+
+        // when
+        Mono<Void> result = friendService.deleteFriend(1L, 2L);
+
+        // then
+        StepVerifier.create(result)
+                .expectError(IllegalArgumentException.class)
+                .verify();
+    }
     @BeforeEach
     void init() {
         MockitoAnnotations.openMocks(this);
