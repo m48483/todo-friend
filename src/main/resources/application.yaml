@@ -8,3 +8,7 @@ spring:
       enabled: true
   application:
     name: friend
+
+jwt:
+  secret: y7w58a$Ry71afdv87yaod89f230r5!@2desre76wawaqeQrBhXZl0#
+  expiration: 25920000

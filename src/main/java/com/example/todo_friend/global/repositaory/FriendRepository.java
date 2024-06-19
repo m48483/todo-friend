@@ -10,5 +10,8 @@ import reactor.core.publisher.Mono;
 public interface FriendRepository extends ReactiveCrudRepository<Friend, Long> {
     @Query("DELETE FROM FRIENDS WHERE USER1_ID = :user1Id AND USER2_ID = :user2Id")
     Mono<Void> deleteByUser1IdAndUser2Id(Long user1Id, Long user2Id);
-    Flux<FriendResponse> findAllByUser1Id(Long user1Id);
+
+    @Query("SELECT u.USER_ID, u.USER_NICKNAME, u.USER_IMAGE " +
+            "FROM USERS u INNER JOIN FRIENDS f ON u.USER_ID = f.USER2_ID WHERE f.USER1_ID = :user1Id")
+    Flux<FriendResponse> findFriendsByUser1Id(Long user1Id);
 }
