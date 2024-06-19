@@ -1,5 +1,6 @@
 package com.example.todo_friend.service;
 
+import com.example.todo_friend.global.dto.request.FriendRequest;
 import com.example.todo_friend.global.dto.response.FriendResponse;
 import com.example.todo_friend.global.entity.Friend;
 import com.example.todo_friend.global.repositaory.FriendRepository;
@@ -10,8 +11,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class FriendServiceTest {
@@ -23,6 +26,7 @@ class FriendServiceTest {
     @InjectMocks
     private FriendServiceImpl friendService;
 
+    private Friend friend;
     private FriendResponse[] friendResponses;
 
     @Test
@@ -45,7 +49,22 @@ class FriendServiceTest {
 
     @Test
     void createFriend() {
-        // Test for creating friend
+//        given
+        FriendRequest req = new FriendRequest(1L,2L);
+        friend = new Friend(req.toEntity().getUser1Id(),req.toEntity().getUser2Id());
+
+        when(friendRepository.save(any(Friend.class))).thenReturn(Mono.just(friend));
+
+//        when
+        Mono<Friend> result = friendService.createFriend(req);
+
+//        then
+        StepVerifier.create(result)
+                .expectNextMatches(save->
+                        save.getUser1Id().equals(1L) &&
+                        save.getUser2Id().equals(2L))
+                .verifyComplete();
+
     }
 
     @Test
