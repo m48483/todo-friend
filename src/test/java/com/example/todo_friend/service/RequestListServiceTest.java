@@ -1,6 +1,7 @@
 package com.example.todo_friend.service;
 
 import com.example.todo_friend.global.dto.request.FriendRequest;
+import com.example.todo_friend.global.dto.request.RequestSendRequest;
 import com.example.todo_friend.global.entity.RequestList;
 import com.example.todo_friend.global.repositaory.RequestListRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ class RequestListServiceTest {
     @Test
     void sendRequest() {
 //        given
-        FriendRequest req = new FriendRequest(1L,2L);
+        RequestSendRequest req = new RequestSendRequest(1L,2L);
 //        when
         when(requestListRepository.save(test)).thenReturn(Mono.just(test));
         Mono<RequestList> result = requestListService.sendRequest(req);

@@ -29,6 +29,7 @@ class FriendServiceTest {
 
     private Friend friend;
     private FriendResponse[] friendResponses;
+    private FriendRequest req;
 
     @Test
     void 친구_목록_불러오기() {
@@ -75,7 +76,7 @@ class FriendServiceTest {
                 .thenReturn(Mono.empty());
 
 //        given
-        Mono<Void> result = friendService.deleteFriend(1L, 2L);
+        Mono<Void> result = friendService.deleteFriend(req);
 //        then
         StepVerifier.create(result)
                 .expectComplete()
@@ -89,7 +90,7 @@ class FriendServiceTest {
                 .thenReturn(Mono.error(new IllegalArgumentException("친구 관계 삭제에 실패했습니다.")));
 
         // when
-        Mono<Void> result = friendService.deleteFriend(1L, 2L);
+        Mono<Void> result = friendService.deleteFriend(req);
 
         // then
         StepVerifier.create(result)
@@ -105,5 +106,7 @@ class FriendServiceTest {
                 new FriendResponse(2L, "test2", "test2"),
                 new FriendResponse(3L, "test3", "test3")
         };
+
+        req = new FriendRequest(1L,2L);
     }
 }
