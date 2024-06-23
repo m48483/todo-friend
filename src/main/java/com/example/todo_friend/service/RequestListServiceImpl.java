@@ -27,35 +27,43 @@ public class RequestListServiceImpl implements RequestListService{
         Long senderId = request.senderId();
         Long receiverId = request.receiverId();
 
-        // Check and save sender
-        Mono<User> senderMono = userRepository.insertIfNotExistAndReturn(senderId)
-                .then(userRepository.findByUserId(senderId));
+        // Check if request already exists
+        return requestListRepository.existsByRequestSenderAndRequestReceiver(senderId, receiverId)
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new IllegalArgumentException("이미 처리된 요청입니다."));
+                    } else {
+                        // Check and save sender
+                        Mono<User> senderMono = userRepository.insertIfNotExistAndReturn(senderId)
+                                .then(userRepository.findByUserId(senderId));
 
-        // Check and save receiver
-        Mono<User> receiverMono = userRepository.insertIfNotExistAndReturn(receiverId)
-                .then(userRepository.findByUserId(receiverId));
+                        // Check and save receiver
+                        Mono<User> receiverMono = userRepository.insertIfNotExistAndReturn(receiverId)
+                                .then(userRepository.findByUserId(receiverId));
 
-        // Wait for both sender and receiver to be saved, then save the request
-        return Mono.zip(senderMono, receiverMono)
-                .doOnNext(tuple -> {
-                    System.out.println("Both sender and receiver are ready");
-                })
-                .flatMap(tuple -> {
-                    User sender = tuple.getT1();
-                    User receiver = tuple.getT2();
-                    RequestList req = RequestList.builder()
-                            .requestSender(sender.getUserId())
-                            .requestReceiver(receiver.getUserId())
-                            .requestCreatedAt(LocalDateTime.now())
-                            .build();
-                    return requestListRepository.save(req)
-                            .doOnNext(savedReq -> System.out.println("Request saved: " + savedReq));
+                        // Wait for both sender and receiver to be saved, then save the request
+                        return Mono.zip(senderMono, receiverMono)
+                                .doOnNext(tuple -> {
+                                    System.out.println("Both sender and receiver are ready");
+                                })
+                                .flatMap(tuple -> {
+                                    User sender = tuple.getT1();
+                                    User receiver = tuple.getT2();
+                                    RequestList req = RequestList.builder()
+                                            .requestSender(sender.getUserId())
+                                            .requestReceiver(receiver.getUserId())
+                                            .requestCreatedAt(LocalDateTime.now())
+                                            .build();
+                                    return requestListRepository.save(req)
+                                            .doOnNext(savedReq -> System.out.println("Request saved: " + savedReq));
+                                });
+                    }
                 })
                 .doOnError(e -> {
                     // Log the error
                     System.err.println("Error sending friend request: " + e.getMessage());
                 });
-        }
+    }
 
     @Override
     public Mono<String> respondToRequest(Long id, boolean status) {
