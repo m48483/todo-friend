@@ -38,7 +38,7 @@ class UserServiceTest {
 //        given
         when(userRepository.save(test)).thenReturn(Mono.just(test));
 //        when
-        Mono<User> result = userService.saveUser(test);
+        Mono<User> result = userService.findById(test.getUserId());
 //        then
         StepVerifier.create(result)
                 .expectNextMatches(user-> user.getUserId().equals(1L))

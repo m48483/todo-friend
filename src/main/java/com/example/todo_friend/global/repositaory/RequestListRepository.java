@@ -5,5 +5,5 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 
 public interface RequestListRepository extends ReactiveCrudRepository<RequestList,Long> {
-    Flux<RequestList> findByRequestReceiver(Long requestReceiver);
+    Flux<RequestList> findAllByRequestReceiver(Long receiverId);
 }
