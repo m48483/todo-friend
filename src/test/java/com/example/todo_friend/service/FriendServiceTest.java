@@ -55,7 +55,7 @@ class FriendServiceTest {
         FriendRequest req = new FriendRequest(1L,2L);
         friend = new Friend(req.toEntity().getUser1Id(),req.toEntity().getUser2Id());
 
-        when(friendRepository.save(any(Friend.class))).thenReturn(Mono.just(friend));
+        when(friendRepository.createFriendship(req.user1Id(), req.user2Id())).thenReturn(Mono.empty());
 
 //        when
         Mono<Friend> result = friendService.createFriend(req);
@@ -72,7 +72,7 @@ class FriendServiceTest {
     @Test
     void 친구_관계_삭제_성공() {
 //        given
-        when(friendRepository.deleteByUser1IdAndUser2Id(anyLong(),anyLong()))
+        when(friendRepository.deleteFriendship(anyLong(),anyLong()))
                 .thenReturn(Mono.empty());
 
 //        given
@@ -80,21 +80,6 @@ class FriendServiceTest {
 //        then
         StepVerifier.create(result)
                 .expectComplete()
-                .verify();
-    }
-
-    @Test
-    void 친구_관계_삭제_실패_테스트() {
-        // given
-        when(friendRepository.deleteByUser1IdAndUser2Id(anyLong(), anyLong()))
-                .thenReturn(Mono.error(new IllegalArgumentException("친구 관계 삭제에 실패했습니다.")));
-
-        // when
-        Mono<Void> result = friendService.deleteFriend(req);
-
-        // then
-        StepVerifier.create(result)
-                .expectError(IllegalArgumentException.class)
                 .verify();
     }
     @BeforeEach

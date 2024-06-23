@@ -10,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class UserServiceTest {
@@ -22,7 +23,7 @@ class UserServiceTest {
     private User test;
 
     @Test
-    void findById() {
+    void 유저_검색_성공() {
 //        given
         when(userRepository.findById(1L)).thenReturn(Mono.just(test));
 //        when
@@ -34,18 +35,25 @@ class UserServiceTest {
     }
 
     @Test
-    void saveUser() {
+    void 유저_검색_실패() {
 //        given
-        when(userRepository.save(test)).thenReturn(Mono.just(test));
+        Long userId = 1L;
+        User newUser = new User();
+        newUser.setUserId(userId);
+        newUser.setUserNickname("default");
+        newUser.setUserImage("default");
+
+        when(userRepository.findById(1L)).thenReturn(Mono.empty());
+        when(userRepository.save(any(User.class))).thenReturn(Mono.just(newUser));
 //        when
-        Mono<User> result = userService.findById(test.getUserId());
+        Mono<User> result = userService.findById(1L);
 //        then
         StepVerifier.create(result)
                 .expectNextMatches(user-> user.getUserId().equals(1L))
                 .verifyComplete();
     }
     @BeforeEach
-    void init(){
+    void setup(){
         MockitoAnnotations.openMocks(this);
 
         test = User.builder()
