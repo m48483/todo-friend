@@ -76,7 +76,7 @@ class FriendServiceTest {
                 .thenReturn(Mono.empty());
 
 //        given
-        Mono<Void> result = friendService.deleteFriend(req);
+        Mono<Void> result = friendService.deleteFriend(1L, 2L);
 //        then
         StepVerifier.create(result)
                 .expectComplete()

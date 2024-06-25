@@ -23,7 +23,7 @@ public class FriendController {
     }
 
     @DeleteMapping//("/{friendId}")
-    public Mono<Void> deleteFriend(@RequestBody FriendRequest req) {
-        return friendService.deleteFriend(req);
+    public Mono<Void> deleteFriend(@RequestParam Long user1Id, @RequestParam Long user2Id) {
+        return friendService.deleteFriend(user1Id, user2Id);
     }
 }

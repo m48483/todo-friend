@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:mysql://localhost:3306/todo_friends
+    url: r2dbc:mysql://friend-sql:3306/todo_friends
     username: ${username}
     password: ${password}
   h2:
