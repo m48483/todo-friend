@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:mysql://friend-sql:3306/todo_friends
+    url: r2dbc:mysql://friend-mysql:3306/todo_friends
     username: ${username}
     password: ${password}
   h2:
@@ -12,3 +12,4 @@ spring:
 jwt:
   secret: y7w58a$Ry71afdv87yaod89f230r5!@2desre76wawaqeQrBhXZl0#
   expiration: 25920000
+
