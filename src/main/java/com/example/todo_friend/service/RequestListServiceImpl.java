@@ -12,12 +12,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class RequestListServiceImpl implements RequestListService{
+public class RequestListServiceImpl implements RequestListService {
     private final RequestListRepository requestListRepository;
     private final FriendService friendService;
     private final UserRepository userRepository;
@@ -27,25 +28,12 @@ public class RequestListServiceImpl implements RequestListService{
         Long senderId = request.senderId();
         Long receiverId = request.receiverId();
 
-        // Check if request already exists
         return requestListRepository.existsByRequestSenderAndRequestReceiver(senderId, receiverId)
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.error(new IllegalArgumentException("이미 처리된 요청입니다."));
                     } else {
-                        // Check and save sender
-                        Mono<User> senderMono = userRepository.insertIfNotExistAndReturn(senderId)
-                                .then(userRepository.findByUserId(senderId));
-
-                        // Check and save receiver
-                        Mono<User> receiverMono = userRepository.insertIfNotExistAndReturn(receiverId)
-                                .then(userRepository.findByUserId(receiverId));
-
-                        // Wait for both sender and receiver to be saved, then save the request
-                        return Mono.zip(senderMono, receiverMono)
-                                .doOnNext(tuple -> {
-                                    System.out.println("Both sender and receiver are ready");
-                                })
+                        return saveUsersIfNotExist(senderId, receiverId)
                                 .flatMap(tuple -> {
                                     User sender = tuple.getT1();
                                     User receiver = tuple.getT2();
@@ -54,20 +42,27 @@ public class RequestListServiceImpl implements RequestListService{
                                             .requestReceiver(receiver.getUserId())
                                             .requestCreatedAt(LocalDateTime.now())
                                             .build();
-                                    return requestListRepository.save(req)
-                                            .doOnNext(savedReq -> System.out.println("Request saved: " + savedReq));
+                                    return requestListRepository.save(req);
                                 });
                     }
                 })
                 .doOnError(e -> {
-                    // Log the error
                     System.err.println("Error sending friend request: " + e.getMessage());
                 });
     }
 
+    private Mono<Tuple2<User, User>> saveUsersIfNotExist(Long senderId, Long receiverId) {
+        Mono<User> senderMono = userRepository.insertIfNotExistAndReturn(senderId)
+                .then(userRepository.findByUserId(senderId));
+
+        Mono<User> receiverMono = userRepository.insertIfNotExistAndReturn(receiverId)
+                .then(userRepository.findByUserId(receiverId));
+
+        return Mono.zip(senderMono, receiverMono);
+    }
+
     @Override
     public Mono<String> respondToRequest(Long id, boolean status) {
-        // status true: 수락, false: 거절
         return requestListRepository.findById(id)
                 .flatMap(byId -> {
                     if (status) {
