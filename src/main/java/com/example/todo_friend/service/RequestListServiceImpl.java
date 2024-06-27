@@ -1,13 +1,12 @@
 package com.example.todo_friend.service;
 
-import com.example.todo_friend.global.dto.request.FriendRequest;
-import com.example.todo_friend.global.dto.request.RequestSendRequest;
-import com.example.todo_friend.global.dto.response.RequestListResponse;
-import com.example.todo_friend.global.entity.Friend;
-import com.example.todo_friend.global.entity.RequestList;
-import com.example.todo_friend.global.entity.User;
-import com.example.todo_friend.global.repositaory.RequestListRepository;
-import com.example.todo_friend.global.repositaory.UserRepository;
+import com.example.todo_friend.dto.request.FriendRequest;
+import com.example.todo_friend.dto.request.RequestSendRequest;
+import com.example.todo_friend.dto.response.RequestListResponse;
+import com.example.todo_friend.domain.entity.RequestList;
+import com.example.todo_friend.domain.entity.User;
+import com.example.todo_friend.domain.repositaory.RequestListRepository;
+import com.example.todo_friend.domain.repositaory.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

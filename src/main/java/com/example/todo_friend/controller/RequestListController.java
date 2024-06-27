@@ -1,10 +1,9 @@
 package com.example.todo_friend.controller;
 
-import com.example.todo_friend.global.dto.request.RequestSendRequest;
-import com.example.todo_friend.global.dto.response.RequestListResponse;
-import com.example.todo_friend.global.entity.RequestList;
+import com.example.todo_friend.dto.request.RequestSendRequest;
+import com.example.todo_friend.dto.response.RequestListResponse;
+import com.example.todo_friend.global.utils.JwtUtils;
 import com.example.todo_friend.service.RequestListService;
-import com.example.todo_friend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,19 +15,28 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class RequestListController {
     private final RequestListService requestListService;
-    private final UserService userService;
-    @PostMapping
-    public Mono<Void> sendFriendRequest(@RequestBody RequestSendRequest request) {
+    private final JwtUtils jwtUtils;
+
+    @PostMapping("/{receiverId}")
+    public Mono<Void> sendFriendRequest(@RequestHeader("Authorization") String token
+            , @PathVariable Long receiverId) {
+        String bearerToken = token.substring(7);
+        Long senderId = jwtUtils.getUserInfoFromToken(bearerToken).getUserId();
+        RequestSendRequest request = new RequestSendRequest(senderId, receiverId);
         return requestListService.sendRequest(request).then();
     }
-//    토큰 받는 거로 수정해야 함
-    @GetMapping("/{receiverId}")
-    public Flux<RequestListResponse> getFriendRequests(@PathVariable Long receiverId) {
+
+    @GetMapping
+    public Flux<RequestListResponse> getFriendRequests(@RequestHeader("Authorization") String token) {
+        String bearerToken = token.substring(7);
+        Long receiverId = jwtUtils.getUserInfoFromToken(bearerToken).getUserId();
         return requestListService.getRequestsForReceiver(receiverId);
     }
 
     @DeleteMapping("/{requestId}")
-    public Mono<ResponseEntity<String>> respondToRequest(@PathVariable Long requestId, @RequestParam boolean status) {
+    public Mono<ResponseEntity<String>> respondToRequest(@RequestHeader("Authorization") String token
+            ,@PathVariable Long requestId, @RequestParam boolean status) {
+        String bearerToken = token.substring(7);
         return requestListService.respondToRequest(requestId, status)
                 .map(ResponseEntity::ok)
                 .onErrorResume(e -> Mono.just(ResponseEntity.badRequest().body(e.getMessage())));

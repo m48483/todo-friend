@@ -1,10 +1,10 @@
 package com.example.todo_friend.service;
 
-import com.example.todo_friend.global.dto.request.FriendRequest;
-import com.example.todo_friend.global.dto.response.FriendResponse;
-import com.example.todo_friend.global.entity.Friend;
-import com.example.todo_friend.global.repositaory.FriendRepository;
-import com.example.todo_friend.global.repositaory.UserRepository;
+import com.example.todo_friend.dto.request.FriendRequest;
+import com.example.todo_friend.dto.response.FriendResponse;
+import com.example.todo_friend.domain.entity.Friend;
+import com.example.todo_friend.domain.repositaory.FriendRepository;
+import com.example.todo_friend.domain.repositaory.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

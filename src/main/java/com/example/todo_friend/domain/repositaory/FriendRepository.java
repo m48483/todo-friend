@@ -1,7 +1,7 @@
-package com.example.todo_friend.global.repositaory;
+package com.example.todo_friend.domain.repositaory;
 
-import com.example.todo_friend.global.dto.response.FriendResponse;
-import com.example.todo_friend.global.entity.Friend;
+import com.example.todo_friend.dto.response.FriendResponse;
+import com.example.todo_friend.domain.entity.Friend;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;

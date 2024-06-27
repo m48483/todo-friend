@@ -1,7 +1,7 @@
 package com.example.todo_friend.service;
 
-import com.example.todo_friend.global.entity.User;
-import com.example.todo_friend.global.repositaory.UserRepository;
+import com.example.todo_friend.domain.entity.User;
+import com.example.todo_friend.domain.repositaory.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

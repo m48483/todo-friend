@@ -1,9 +1,8 @@
 package com.example.todo_friend.service;
 
-import com.example.todo_friend.global.dto.request.FriendRequest;
-import com.example.todo_friend.global.dto.request.RequestSendRequest;
-import com.example.todo_friend.global.dto.response.RequestListResponse;
-import com.example.todo_friend.global.entity.RequestList;
+import com.example.todo_friend.dto.request.RequestSendRequest;
+import com.example.todo_friend.dto.response.RequestListResponse;
+import com.example.todo_friend.domain.entity.RequestList;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
