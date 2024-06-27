@@ -22,4 +22,5 @@ public interface UserRepository extends ReactiveCrudRepository<User,Long> {
     @Modifying
     @Query("UPDATE USERS SET USER_NICKNAME = :nickname, USER_IMAGE = :image WHERE USER_ID = :userId")
     Mono<Integer> updateUser(Long userId, String nickname, String image);
+    Mono<Boolean> existsById(Long userId);
 }

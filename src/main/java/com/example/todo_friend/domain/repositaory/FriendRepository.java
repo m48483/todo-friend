@@ -19,4 +19,7 @@ public interface FriendRepository extends ReactiveCrudRepository<Friend, Long> {
 
     @Query("INSERT INTO FRIENDS (USER1_ID, USER2_ID) VALUES (:user1Id, :user2Id), (:user2Id, :user1Id)")
     Mono<Friend> createFriendship(Long user1Id, Long user2Id);
+
+    @Query("DELETE FROM FRIENDS WHERE (USER1_ID = :userId) OR (USER2_ID = :userId)")
+    Mono<Void> deleteUser(Long userId);
 }
