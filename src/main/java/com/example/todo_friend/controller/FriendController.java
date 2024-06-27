@@ -5,6 +5,7 @@ import com.example.todo_friend.global.utils.JwtUtils;
 import com.example.todo_friend.service.FriendService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

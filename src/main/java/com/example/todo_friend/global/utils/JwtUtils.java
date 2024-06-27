@@ -50,7 +50,6 @@ public class JwtUtils {
         Long userId = payload.get("id", Long.class);
         String userNickname = payload.get("nickname", String.class);
         String userImage = payload.get("image", String.class);
-
         return new User(userId, userNickname, userImage);
     }
 }

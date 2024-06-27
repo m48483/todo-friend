@@ -8,6 +8,10 @@ spring:
       enabled: true
   application:
     name: friend
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
 
 jwt:
   secret: y7w58a$Ry71afdv87yaod89f230r5!@2desre76wawaqeQrBhXZl0#
