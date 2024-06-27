@@ -21,13 +21,26 @@ public class UserServiceImpl implements UserService {
         String nickname = userInfoDto.nickname();
         String image = userInfoDto.image();
 
-        User user = new User();
-        user.setUserId(userId);
-        user.setUserNickname(nickname);
-        user.setUserImage(image);
-
         return userRepository.createUser(userId, nickname, image)
                 .then(); // Mono<Integer>를 Mono<Void>로 변환
+    }
+
+    @Override
+    public Mono<Void> processUserUpdate(UserInfoDto userInfoDto) {
+        System.out.println("Received userId: " + userInfoDto.userId());
+        System.out.println("Received nickname: " + userInfoDto.nickname());
+        System.out.println("Received image: " + userInfoDto.image());
+
+        Long userId = userInfoDto.userId();
+        String nickname = userInfoDto.nickname();
+        String image = userInfoDto.image();
+
+        return userRepository.updateUser(userId,nickname,image).then();
+    }
+
+    @Override
+    public Mono<Void> processUserDelete(Long userId) {
+        return userRepository.deleteById(userId).then();
     }
 
     @Override
