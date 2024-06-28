@@ -1,15 +1,18 @@
 package com.example.todo_friend.service;
 
-import com.example.todo_friend.global.dto.request.FriendRequest;
-import com.example.todo_friend.global.dto.request.RequestSendRequest;
-import com.example.todo_friend.global.dto.response.RequestListResponse;
-import com.example.todo_friend.global.entity.Friend;
-import com.example.todo_friend.global.entity.RequestList;
-import com.example.todo_friend.global.entity.User;
-import com.example.todo_friend.global.repositaory.RequestListRepository;
-import com.example.todo_friend.global.repositaory.UserRepository;
+import com.example.todo_friend.domain.entity.Friend;
+import com.example.todo_friend.dto.request.FriendRequest;
+import com.example.todo_friend.dto.request.RequestSendRequest;
+import com.example.todo_friend.dto.response.RequestListResponse;
+import com.example.todo_friend.domain.entity.RequestList;
+import com.example.todo_friend.domain.entity.User;
+import com.example.todo_friend.domain.repositaory.RequestListRepository;
+import com.example.todo_friend.domain.repositaory.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -22,6 +25,7 @@ public class RequestListServiceImpl implements RequestListService {
     private final RequestListRepository requestListRepository;
     private final FriendService friendService;
     private final UserRepository userRepository;
+    private final RestTemplate restTemplate;
 
     @Override
     public Mono<RequestList> sendRequest(RequestSendRequest request) {
@@ -62,12 +66,21 @@ public class RequestListServiceImpl implements RequestListService {
     }
 
     @Override
+    public Flux<RequestListResponse> getRequestsForReceiver(Long receiverId) {
+        return requestListRepository.findAllByRequestReceiver(receiverId)
+                .flatMap(requestList -> userRepository.findByUserId(requestList.getRequestSender())
+                        .map(user -> RequestListResponse.from(requestList, user))
+                );
+    }
+
+    @Override
     public Mono<String> respondToRequest(Long id, boolean status) {
         return requestListRepository.findById(id)
-                .flatMap(byId -> {
+                .flatMap(request -> {
                     if (status) {
-                        FriendRequest request = new FriendRequest(byId.getRequestSender(), byId.getRequestReceiver());
-                        return friendService.createFriend(request)
+                        FriendRequest friendRequest = new FriendRequest(request.getRequestSender(), request.getRequestReceiver());
+                        return friendService.createFriend(friendRequest)
+                                .then(sendFriendInfoToTodoService(request.getRequestSender(), request.getRequestReceiver()))
                                 .then(requestListRepository.deleteById(id))
                                 .thenReturn("요청을 수락하였습니다.");
                     } else {
@@ -81,11 +94,15 @@ public class RequestListServiceImpl implements RequestListService {
                 });
     }
 
-    @Override
-    public Flux<RequestListResponse> getRequestsForReceiver(Long receiverId) {
-        return requestListRepository.findAllByRequestReceiver(receiverId)
-                .flatMap(requestList -> userRepository.findByUserId(requestList.getRequestSender())
-                        .map(user -> RequestListResponse.from(requestList, user))
-                );
+    private Mono<Void> sendFriendInfoToTodoService(Long user1Id, Long user2Id) {
+        Friend savedFriends = new Friend(user1Id, user2Id); // 예시로 만든 Friend 객체 생성
+        return Mono.fromRunnable(() -> {
+            restTemplate.postForEntity(
+                    "http://35.238.87.27/todos/friend-add",
+                    savedFriends,
+                    Void.class
+            );
+            System.out.println("친구 정보를 todo 서버로 전송했습니다.");
+        });
     }
 }

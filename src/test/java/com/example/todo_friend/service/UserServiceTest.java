@@ -1,7 +1,7 @@
 package com.example.todo_friend.service;
 
-import com.example.todo_friend.global.entity.User;
-import com.example.todo_friend.global.repositaory.UserRepository;
+import com.example.todo_friend.domain.entity.User;
+import com.example.todo_friend.domain.repositaory.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

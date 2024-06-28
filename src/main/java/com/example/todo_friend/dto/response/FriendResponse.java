@@ -1,6 +1,6 @@
-package com.example.todo_friend.global.dto.response;
+package com.example.todo_friend.dto.response;
 
-import com.example.todo_friend.global.entity.User;
+import com.example.todo_friend.domain.entity.User;
 
 public record FriendResponse(
         Long userId,
