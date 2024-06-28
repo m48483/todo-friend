@@ -57,16 +57,4 @@ public class UserServiceImpl implements UserService {
                     }
                 });
     }
-
-    @Override
-    public Mono<User> findById(Long id) {
-        return userRepository.findById(id)
-                .switchIfEmpty(Mono.defer(() -> {
-                    User newUser = new User();
-                    newUser.setUserId(id);
-                    newUser.setUserNickname("default");
-                    newUser.setUserImage("default");
-                    return userRepository.save(newUser);
-                }));
-    }
 }
