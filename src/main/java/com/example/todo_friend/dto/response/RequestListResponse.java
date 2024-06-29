@@ -1,8 +1,7 @@
-package com.example.todo_friend.global.dto.response;
+package com.example.todo_friend.dto.response;
 
-import com.example.todo_friend.global.entity.RequestList;
-import com.example.todo_friend.global.entity.User;
-import com.example.todo_friend.global.repositaory.UserRepository;
+import com.example.todo_friend.domain.entity.RequestList;
+import com.example.todo_friend.domain.entity.User;
 
 import java.time.LocalDateTime;
 

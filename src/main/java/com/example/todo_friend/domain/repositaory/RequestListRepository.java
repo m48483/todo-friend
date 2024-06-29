@@ -1,6 +1,6 @@
-package com.example.todo_friend.global.repositaory;
+package com.example.todo_friend.domain.repositaory;
 
-import com.example.todo_friend.global.entity.RequestList;
+import com.example.todo_friend.domain.entity.RequestList;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

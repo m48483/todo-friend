@@ -1,6 +1,6 @@
-package com.example.todo_friend.global.dto.request;
+package com.example.todo_friend.dto.request;
 
-import com.example.todo_friend.global.entity.Friend;
+import com.example.todo_friend.domain.entity.Friend;
 
 public record FriendRequest(
         Long user1Id,

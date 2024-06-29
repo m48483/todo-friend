@@ -1,4 +1,4 @@
-package com.example.todo_friend.global.entity;
+package com.example.todo_friend.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

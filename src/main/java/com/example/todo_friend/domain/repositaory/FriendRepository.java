@@ -1,7 +1,7 @@
-package com.example.todo_friend.global.repositaory;
+package com.example.todo_friend.domain.repositaory;
 
-import com.example.todo_friend.global.dto.response.FriendResponse;
-import com.example.todo_friend.global.entity.Friend;
+import com.example.todo_friend.dto.response.FriendResponse;
+import com.example.todo_friend.domain.entity.Friend;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
@@ -19,4 +19,7 @@ public interface FriendRepository extends ReactiveCrudRepository<Friend, Long> {
 
     @Query("INSERT INTO FRIENDS (USER1_ID, USER2_ID) VALUES (:user1Id, :user2Id), (:user2Id, :user1Id)")
     Mono<Friend> createFriendship(Long user1Id, Long user2Id);
+
+    @Query("DELETE FROM FRIENDS WHERE (USER1_ID = :userId) OR (USER2_ID = :userId)")
+    Mono<Void> deleteUser(Long userId);
 }

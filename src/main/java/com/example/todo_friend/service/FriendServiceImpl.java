@@ -1,11 +1,12 @@
 package com.example.todo_friend.service;
 
-import com.example.todo_friend.global.dto.request.FriendRequest;
-import com.example.todo_friend.global.dto.response.FriendResponse;
-import com.example.todo_friend.global.entity.Friend;
-import com.example.todo_friend.global.repositaory.FriendRepository;
+import com.example.todo_friend.dto.request.FriendRequest;
+import com.example.todo_friend.dto.response.FriendResponse;
+import com.example.todo_friend.domain.entity.Friend;
+import com.example.todo_friend.domain.repositaory.FriendRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class FriendServiceImpl implements FriendService {
     private final FriendRepository friendRepository;
+    private final FriendInfoService friendInfoService;
 
     @Override
     public Flux<FriendResponse> getFriends(Long userId) {
@@ -37,9 +39,11 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
-    public Mono<Void> deleteFriend(FriendRequest req) {
-        return friendRepository.deleteFriendship(req.user1Id(), req.user2Id())
+    public Mono<Void> deleteFriend(Long user1Id, Long user2Id) {
+        return friendRepository.deleteFriendship(user1Id, user2Id)
 //                .switchIfEmpty(Mono.error(new IllegalArgumentException("친구 관계 삭제에 실패했습니다.")))
+                .then(friendInfoService
+                        .deleteFriendsToTodoService(user1Id, user2Id))
                 .onErrorResume(e -> {
                     System.err.println("친구 삭제 중 에러 발생: " + e.getMessage());
                     return Mono.error(e);
