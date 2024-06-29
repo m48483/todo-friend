@@ -52,9 +52,8 @@ public class UserServiceImpl implements UserService {
                 .onErrorResume(e -> {
                     if (e instanceof DataIntegrityViolationException) {
                         return Mono.error(new RuntimeException("사용자 삭제 실패: 관련 데이터가 존재합니다.", e));
-                    } else {
-                        return Mono.error(new RuntimeException("사용자 삭제 중 오류 발생: " + e.getMessage(), e));
                     }
+                    return Mono.error(new RuntimeException("사용자 삭제 중 오류 발생: " + e.getMessage(), e));
                 });
     }
 }
