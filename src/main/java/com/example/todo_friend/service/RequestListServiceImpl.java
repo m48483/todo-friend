@@ -8,6 +8,7 @@ import com.example.todo_friend.domain.entity.User;
 import com.example.todo_friend.domain.repositaory.RequestListRepository;
 import com.example.todo_friend.domain.repositaory.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Flux;
@@ -16,6 +17,7 @@ import reactor.util.function.Tuple2;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RequestListServiceImpl implements RequestListService {
@@ -46,7 +48,7 @@ public class RequestListServiceImpl implements RequestListService {
                             });
                 })
                 .doOnError(e -> {
-                    System.err.println("Error sending friend request: " + e.getMessage());
+                    log.error("Error sending friend request: " + e.getMessage());
                 });
     }
 
