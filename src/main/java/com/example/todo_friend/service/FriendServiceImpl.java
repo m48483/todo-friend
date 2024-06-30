@@ -4,6 +4,7 @@ import com.example.todo_friend.dto.request.FriendRequest;
 import com.example.todo_friend.dto.response.FriendResponse;
 import com.example.todo_friend.domain.entity.Friend;
 import com.example.todo_friend.domain.repositaory.FriendRepository;
+import com.example.todo_friend.dto.response.RequestListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public Flux<FriendResponse> getFriends(Long userId) {
         return friendRepository.findFriendsByUser1Id(userId)
-                .switchIfEmpty(Flux.error(new IllegalArgumentException("해당 사용자의 친구가 없습니다.")))
+                .switchIfEmpty(Flux.empty())
                 .onErrorResume(e -> {
                     log.error("친구 목록 조회 중 에러 발생: " + e.getMessage());
                     return Flux.error(e);
