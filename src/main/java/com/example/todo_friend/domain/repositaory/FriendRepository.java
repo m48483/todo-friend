@@ -22,6 +22,6 @@ public interface FriendRepository extends ReactiveCrudRepository<Friend, Long> {
     @Query("DELETE FROM FRIENDS WHERE (USER1_ID = :userId) OR (USER2_ID = :userId)")
     Mono<Void> deleteUser(Long userId);
 
-    @Query("SELECT EXISTS(SELECT 1 FROM friends WHERE user1_id = :userId1 AND user2_id = :userId2)")
-    Mono<Long> existsByUser1IdAndUser2Id(Long userId1, Long userId2);
+    @Query("SELECT EXISTS(SELECT 1 FROM FRIENDS WHERE USER1_ID = :user1Id AND USER2_ID = :user2Id)")
+    Mono<Long> existsByUser1IdAndUser2Id(Long user1Id, Long user2Id);
 }
