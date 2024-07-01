@@ -1,5 +1,6 @@
 package com.example.todo_friend.service;
 
+import com.example.todo_friend.domain.repositaory.FriendRepository;
 import com.example.todo_friend.dto.request.FriendRequest;
 import com.example.todo_friend.dto.request.RequestSendRequest;
 import com.example.todo_friend.dto.response.RequestListResponse;
@@ -10,7 +11,6 @@ import com.example.todo_friend.domain.repositaory.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -24,6 +24,7 @@ public class RequestListServiceImpl implements RequestListService {
     private final RequestListRepository requestListRepository;
     private final FriendService friendService;
     private final UserRepository userRepository;
+    private final FriendRepository friendRepository;
     private final FriendInfoService friendInfoService;
 
     @Override
@@ -31,27 +32,36 @@ public class RequestListServiceImpl implements RequestListService {
         Long senderId = request.senderId();
         Long receiverId = request.receiverId();
 
-        return requestListRepository.existsByRequestSenderAndRequestReceiver(senderId, receiverId)
-                .flatMap(exists -> {
-                    if (exists) {
-                        return Mono.error(new IllegalArgumentException("이미 처리된 요청입니다."));
-                    } return saveUsersIfNotExist(senderId, receiverId)
-                            .flatMap(tuple -> {
-                                User sender = tuple.getT1();
-                                User receiver = tuple.getT2();
-                                RequestList req = RequestList.builder()
-                                        .requestSender(sender.getUserId())
-                                        .requestReceiver(receiver.getUserId())
-                                        .requestCreatedAt(LocalDateTime.now())
-                                        .build();
-                                return requestListRepository.save(req);
+        if (senderId.equals(receiverId)){
+            return Mono.error(new IllegalArgumentException("나는 나와 친구한다"));
+        }
+        return friendRepository.existsByUser1IdAndUser2Id(senderId, receiverId)
+                .flatMap(count -> {
+                    if (count > 0) {
+                        return Mono.error(new IllegalArgumentException("이미 친구입니다."));
+                    }
+                    return requestListRepository.existsByRequestSenderAndRequestReceiver(senderId, receiverId)
+                            .flatMap(existsRequest -> {
+                                if (existsRequest) {
+                                    return Mono.error(new IllegalArgumentException("이미 처리된 요청입니다."));
+                                }
+                                return saveUsersIfNotExist(senderId, receiverId)
+                                        .flatMap(tuple -> {
+                                            User sender = tuple.getT1();
+                                            User receiver = tuple.getT2();
+                                            RequestList req = RequestList.builder()
+                                                    .requestSender(sender.getUserId())
+                                                    .requestReceiver(receiver.getUserId())
+                                                    .requestCreatedAt(LocalDateTime.now())
+                                                    .build();
+                                            return requestListRepository.save(req);
+                                        });
                             });
                 })
                 .doOnError(e -> {
                     log.error("Error sending friend request: " + e.getMessage());
                 });
     }
-
     private Mono<Tuple2<User, User>> saveUsersIfNotExist(Long senderId, Long receiverId) {
         Mono<User> senderMono = userRepository.insertIfNotExistAndReturn(senderId)
                 .then(userRepository.findByUserId(senderId));

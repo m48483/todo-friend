@@ -19,7 +19,6 @@ import java.util.Collections;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RequestListRepository requestListRepository;
-    private final FriendRepository friendRepository;
 
     @Override
     public Mono<Void> processUserSignup(UserInfoDto userInfoDto) {
