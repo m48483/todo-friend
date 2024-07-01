@@ -4,12 +4,15 @@ import com.example.todo_friend.dto.request.FriendRequest;
 import com.example.todo_friend.dto.response.FriendResponse;
 import com.example.todo_friend.domain.entity.Friend;
 import com.example.todo_friend.domain.repositaory.FriendRepository;
+import com.example.todo_friend.dto.response.RequestListResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FriendServiceImpl implements FriendService {
@@ -19,9 +22,9 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public Flux<FriendResponse> getFriends(Long userId) {
         return friendRepository.findFriendsByUser1Id(userId)
-                .switchIfEmpty(Flux.error(new IllegalArgumentException("해당 사용자의 친구가 없습니다.")))
+                .switchIfEmpty(Flux.empty())
                 .onErrorResume(e -> {
-                    System.err.println("친구 목록 조회 중 에러 발생: " + e.getMessage());
+                    log.error("친구 목록 조회 중 에러 발생: " + e.getMessage());
                     return Flux.error(e);
                 });
     }
@@ -33,7 +36,7 @@ public class FriendServiceImpl implements FriendService {
         return friendRepository.createFriendship(user1Id, user2Id)
                 .then(Mono.just(new Friend(user1Id, user2Id)))
                 .onErrorResume(e -> {
-                    System.out.println("친구 생성 중 에러 발생: " + e.getMessage());
+                    log.error("친구 생성 중 에러 발생: " + e.getMessage());
                     return Mono.error(e);
                 });
     }
@@ -45,8 +48,9 @@ public class FriendServiceImpl implements FriendService {
                 .then(friendInfoService
                         .deleteFriendsToTodoService(user1Id, user2Id))
                 .onErrorResume(e -> {
-                    System.err.println("친구 삭제 중 에러 발생: " + e.getMessage());
+                    log.error("친구 삭제 중 에러 발생: " + e.getMessage());
                     return Mono.error(e);
                 });
     }
+
 }

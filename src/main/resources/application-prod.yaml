@@ -13,3 +13,8 @@ jwt:
   secret: y7w58a$Ry71afdv87yaod89f230r5!@2desre76wawaqeQrBhXZl0#
   expiration: 25920000
 
+cors:
+  allowed-origins: "http://localhost:5173"
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "*"
+  allow-credentials: true

@@ -6,23 +6,24 @@ import com.example.todo_friend.domain.repositaory.RequestListRepository;
 import com.example.todo_friend.domain.repositaory.UserRepository;
 import com.example.todo_friend.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RequestListRepository requestListRepository;
-    private final FriendRepository friendRepository;
 
     @Override
     public Mono<Void> processUserSignup(UserInfoDto userInfoDto) {
-        System.out.println("Received userId: " + userInfoDto.userId());
-        System.out.println("Received nickname: " + userInfoDto.nickname());
+        log.info("Received userId: " + userInfoDto.userId());
+        log.info("Received nickname: " + userInfoDto.nickname());
 
         Long userId = userInfoDto.userId();
         String nickname = userInfoDto.nickname();
@@ -34,9 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Void> processUserUpdate(UserInfoDto userInfoDto) {
-        System.out.println("Received userId: " + userInfoDto.userId());
-        System.out.println("Received nickname: " + userInfoDto.nickname());
-        System.out.println("Received image: " + userInfoDto.image());
+        log.info("Received userId: " + userInfoDto.userId());
+        log.info("Received nickname: " + userInfoDto.nickname());
+        log.info("Received image: " + userInfoDto.image());
 
         Long userId = userInfoDto.userId();
         String nickname = userInfoDto.nickname();
@@ -52,9 +53,8 @@ public class UserServiceImpl implements UserService {
                 .onErrorResume(e -> {
                     if (e instanceof DataIntegrityViolationException) {
                         return Mono.error(new RuntimeException("사용자 삭제 실패: 관련 데이터가 존재합니다.", e));
-                    } else {
-                        return Mono.error(new RuntimeException("사용자 삭제 중 오류 발생: " + e.getMessage(), e));
                     }
+                    return Mono.error(new RuntimeException("사용자 삭제 중 오류 발생: " + e.getMessage(), e));
                 });
     }
 }

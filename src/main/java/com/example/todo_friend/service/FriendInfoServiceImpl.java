@@ -1,10 +1,12 @@
 package com.example.todo_friend.service;
 import com.example.todo_friend.domain.entity.Friend;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FriendInfoServiceImpl implements FriendInfoService {
@@ -16,7 +18,7 @@ public class FriendInfoServiceImpl implements FriendInfoService {
                     "http://35.238.87.27/todos/friend-delete/{user1Id}/{user2Id}",
                     user1Id,user2Id
             );
-            System.out.println("친구 정보 삭제를 todo 서버로 전송했습니다.");
+            log.info("친구 정보 삭제를 todo 서버로 전송했습니다. user1Id: {}, user2Id: {}", user1Id, user2Id);
         });
     }
 
@@ -29,7 +31,7 @@ public class FriendInfoServiceImpl implements FriendInfoService {
                     savedFriends,
                     Void.class
             );
-            System.out.println("친구 정보를 todo 서버로 전송했습니다.");
+            log.info("친구 정보를 todo 서버로 전송했습니다.");
         });
     }
 

@@ -8,10 +8,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface FriendRepository extends ReactiveCrudRepository<Friend, Long> {
+
     @Query("DELETE FROM FRIENDS WHERE (USER1_ID = :user1Id AND USER2_ID = :user2Id) OR (USER1_ID = :user2Id AND USER2_ID = :user1Id)")
     Mono<Void> deleteFriendship(Long user1Id, Long user2Id);
-
-//    Mono<Void> deleteByUser1IdAndUser2Id(Long user1Id, Long user2Id);
 
     @Query("SELECT u.USER_ID, u.USER_NICKNAME, u.USER_IMAGE " +
             "FROM USERS u INNER JOIN FRIENDS f ON u.USER_ID = f.USER2_ID WHERE f.USER1_ID = :user1Id")
@@ -22,4 +21,7 @@ public interface FriendRepository extends ReactiveCrudRepository<Friend, Long> {
 
     @Query("DELETE FROM FRIENDS WHERE (USER1_ID = :userId) OR (USER2_ID = :userId)")
     Mono<Void> deleteUser(Long userId);
+
+    @Query("SELECT EXISTS(SELECT 1 FROM friends WHERE user1_id = :userId1 AND user2_id = :userId2)")
+    Mono<Long> existsByUser1IdAndUser2Id(Long userId1, Long userId2);
 }

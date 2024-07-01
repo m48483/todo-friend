@@ -7,3 +7,4 @@ RUN ["java" ,"-version"]
 #docker run 시 실행할 명령어
 CMD ["java","-jar","-Dspring.profiles.active=${profiles}","app.jar"]
 EXPOSE 8080
+# docker build .
